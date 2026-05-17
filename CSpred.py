@@ -78,7 +78,7 @@ def prepare_data_for_atom(data: pd.DataFrame, atom: str) -> pd.DataFrame:
     return dat
 
 
-def calc_sing_pdb(
+def predict_shifts(
     pdb_file_name: str,
     pH: float = 5.0,
     TP: bool = True,
@@ -197,7 +197,7 @@ def cli() -> None:
         ML_MODEL_PATH = models_path
 
     if not args.batch:
-        preds = calc_sing_pdb(
+        preds = predict_shifts(
             args.input, args.pH,
             TP=not args.shiftx_only, ML=not args.shifty_only, test=args.test,
         )
@@ -215,7 +215,7 @@ def cli() -> None:
 
         save_prefix = "" if args.output == "shifts.csv" else args.output.rstrip("/") + "/"
         for idx, (pdb_file, ph) in enumerate(inputs):
-            preds = calc_sing_pdb(
+            preds = predict_shifts(
                 pdb_file, ph,
                 TP=not args.shiftx_only, ML=not args.shifty_only, test=args.test,
             )
