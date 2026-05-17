@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 import math
+import os
+import stat
 import warnings
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from Bio import PDB
@@ -15,6 +18,12 @@ except ImportError:
     from Bio.SeqUtils import IUPACData  # biopython < 1.80
 
 warnings.simplefilter('ignore', BiopythonWarning)
+
+_BINS_DIR = Path(__file__).parent / "bins"
+_MKDSSP = _BINS_DIR / "mkdssp"
+if _MKDSSP.exists():
+    _MKDSSP.chmod(_MKDSSP.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
+_DSSP_BIN = str(_MKDSSP) if _MKDSSP.exists() else "mkdssp"
 
 # ── Module-level constants ────────────────────────────────────────────────────
 
@@ -590,7 +599,7 @@ class PDB_SPARTAp_DataReader(BaseDataReader):
         for model in structure:
             nn_tree = PDB.NeighborSearch(list(model.get_atoms()))
             try:
-                dssp = PDB.DSSP(model, fpath)
+                dssp = PDB.DSSP(model, fpath, dssp=_DSSP_BIN)
             except Exception:
                 dssp = []
             if hse:
