@@ -61,6 +61,15 @@ class PatchedTree:
         return (_RealTree, (n_features, n_classes, n_outputs), self._state)
 
 
+def _fix_estimator_attr(model):
+    """Migrate base_estimator -> estimator for sklearn 1.4+ compatibility."""
+    if hasattr(model, 'base_estimator') and not hasattr(model, 'estimator'):
+        model.__dict__['estimator'] = model.__dict__.pop('base_estimator')
+    for est in getattr(model, 'estimators_', []):
+        if hasattr(est, 'base_estimator') and not hasattr(est, 'estimator'):
+            est.__dict__['estimator'] = est.__dict__.pop('base_estimator')
+
+
 class _PatchedTreeModule:
     """sys.modules wrapper so pickle resolves 'Tree' to PatchedTree."""
     def __init__(self, real):
@@ -87,6 +96,7 @@ def patch_models(models_dir: Path, compress: int = 3) -> None:
         finally:
             sys.modules['sklearn.tree._tree'] = _real_tree_module
 
+        _fix_estimator_attr(model)
         joblib.dump(model, sav, compress=compress)
         print(f"  {sav.name} — done ({sav.stat().st_size/1e6:.1f} MB)")
 
