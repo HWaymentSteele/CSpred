@@ -26,9 +26,6 @@ cspred = "CSpred:cli"
 [tool.setuptools]
 packages = ["cspred"]
 include-package-data = true
-
-[tool.setuptools.package-data]
-cspred = ["bins/*", "bins/**/*"]
 py-modules = [
     "CSpred",
     "ucbshifty",
@@ -38,3 +35,6 @@ py-modules = [
     "save_pdb",
     "trainer",
 ]
+
+[tool.setuptools.package-data]
+cspred = ["bins/*", "bins/**/*"]
