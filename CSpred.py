@@ -4,12 +4,15 @@
 
 import os
 import sys
+import warnings
 import argparse
 from pathlib import Path
 from typing import Optional
 
 import pandas as pd
 import joblib
+from sklearn.exceptions import InconsistentVersionWarning
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 from spartap_features import PDB_SPARTAp_DataReader
 from data_prep_functions import (
