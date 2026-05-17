@@ -19,8 +19,13 @@ except ImportError:
 
 warnings.simplefilter('ignore', BiopythonWarning)
 
-_BINS_DIR = Path(__file__).parent / "bins"
-_MKDSSP = _BINS_DIR / "mkdssp"
+try:
+    from importlib.resources import files as _pkg_files
+    _MKDSSP = Path(str(_pkg_files('cspred').joinpath('bins/mkdssp')))
+except Exception:
+    _MKDSSP = Path(__file__).parent / "cspred" / "bins" / "mkdssp"
+if not _MKDSSP.exists():
+    _MKDSSP = Path(__file__).parent / "bins" / "mkdssp"
 if _MKDSSP.exists():
     _MKDSSP.chmod(_MKDSSP.stat().st_mode | stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH)
 _DSSP_BIN = str(_MKDSSP) if _MKDSSP.exists() else "mkdssp"
