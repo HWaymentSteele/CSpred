@@ -2,6 +2,52 @@
 
 UCBShift is a program for predicting chemical shifts for backbone atoms and β-carbon of a protein in solution. The program implements two mechanisms:  a transfer prediction module that employs both sequence alignment and structure alignment to select references for shift replication; and an ensemble decision tree based machine learning module which takes features extracted from a PDB file and makes trustful chemical shift predictions. When combined together, this new predictor achieves state-of-the-art accuracy for predicting chemical shifts in a "real-world" dataset, with root-mean-square errors of  0.38, 0.22, 1.31, 0.97, 1.29 and 2.16 ppm between prediction and experimental values for H, Hα, C, Cα, Cβ and N.
 
+## Quick start
+
+### pip install
+
+```bash
+pip install git+https://github.com/HWaymentSteele/CSpred.git
+```
+
+Then download the model weights from [Dryad](https://datadryad.org/stash/share/6vbrswTtNRcHk2vV3e6P1QGH1yYMhvdHDlauysTCObE) and extract into a `models/` folder in your working directory:
+
+```bash
+tar -xzf models.tgz   # produces models/*.sav (18 files)
+```
+
+### Python / Jupyter usage
+
+```python
+from cspred import predict_shifts
+
+# ML + transfer prediction (best accuracy, requires BLAST and mTM-align)
+df = predict_shifts("protein.pdb", pH=7.0)
+
+# ML only — no external tools required
+df = predict_shifts("protein.pdb", pH=7.0, TP=False)
+
+# Transfer prediction only
+df = predict_shifts("protein.pdb", pH=7.0, ML=False)
+```
+
+### Google Colab
+
+```python
+# Install package and dependencies
+!pip install git+https://github.com/HWaymentSteele/CSpred.git
+
+# Download and extract model weights
+!wget -q "https://datadryad.org/stash/downloads/file_stream/YOUR_FILE_ID" -O models.tgz
+!tar -xzf models.tgz
+
+from cspred import predict_shifts
+df = predict_shifts("protein.pdb", pH=7.0, TP=False)  # ML-only, no external tools needed
+df.head()
+```
+
+> **Note:** The transfer prediction module (UCBShift-Y) requires BLAST and mTM-align, which are not available in Colab. Use `TP=False` for ML-only predictions in Colab environments.
+
 ## Publication
 Li, J., Bennett, K. C., Liu, Y., Martin, M. V., & Head-Gordon, T. (2020). Accurate prediction of chemical shifts for aqueous protein structure on “Real World” data. _Chemical Science_, 11(12), 3180-3191. DOI: [10.1039/C9SC06561J](https://pubs.rsc.org/en/content/articlehtml/2020/sc/c9sc06561j)
 
