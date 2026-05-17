@@ -162,7 +162,9 @@ def calc_sing_pdb(
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
+def cli() -> None:
+    """Entry point for the ``cspred`` command-line tool."""
+    global ML_MODEL_PATH
     parser = argparse.ArgumentParser(
         description=(
             "UCBShift: NMR chemical shift predictor for protein backbone atoms "
@@ -222,3 +224,7 @@ if __name__ == "__main__":
             print(f"Finished prediction for {pdb_file} ({idx + 1}/{len(inputs)})")
 
     print("Complete!")
+
+
+if __name__ == "__main__":
+    cli()
