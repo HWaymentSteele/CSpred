@@ -6,6 +6,8 @@ UCBShift is a program for predicting chemical shifts for backbone atoms and β-c
 
 This fork modernizes UCBShift for Python 3.8+ and current dependencies, and is intended for **academic use only**, consistent with the original UC Regents license.
 
+See Google Colab demo [here](https://github.com/HWaymentSteele/CSpred/blob/1c322878f7c460410ced7a379154019ae488a6db/UCBshift_in_colab_notebook.ipynb)!
+
 ### Install
 
 ```bash
