@@ -4,45 +4,66 @@ UCBShift is a program for predicting chemical shifts for backbone atoms and β-c
 
 ## Quick start
 
-### pip install
+This fork modernizes UCBShift for Python 3.8+ and current dependencies, and is intended for **academic use only**, consistent with the original UC Regents license.
+
+### Install
 
 ```bash
-pip install git+https://github.com/HWaymentSteele/CSpred.git
+pip install --no-deps git+https://github.com/HWaymentSteele/CSpred.git
+pip install numpy pandas scikit-learn biopython joblib  # install deps separately if needed
 ```
 
-Then download the model weights from [Dryad](https://datadryad.org/stash/share/6vbrswTtNRcHk2vV3e6P1QGH1yYMhvdHDlauysTCObE) and extract into a `models/` folder in your working directory:
+### Model weights
 
-```bash
-tar -xzf models.tgz   # produces models/*.sav (18 files)
+The trained model weights (18 `.sav` files) are hosted on Hugging Face at [hkws/ucbshift_weights](https://huggingface.co/hkws/ucbshift_weights/tree/main). Download them into a folder named `ucbshift_weights/` in your working directory:
+
+```python
+from huggingface_hub import snapshot_download
+import os
+
+repo_id = "hkws/ucbshift_weights"
+local_dir = "./ucbshift_weights"
+
+if not os.path.exists(f"{local_dir}/CA_R0.sav"):
+    os.makedirs(local_dir, exist_ok=True)
+    snapshot_download(repo_id=repo_id, repo_type="model", local_dir=local_dir)
 ```
 
-### Python / Jupyter usage
+### Python / Jupyter / Colab usage
 
 ```python
 from cspred import predict_shifts
 
+# ML only — no external tools required, works in Colab
+df = predict_shifts("protein.pdb", pH=7.0, TP=False)
+
 # ML + transfer prediction (best accuracy, requires BLAST and mTM-align)
 df = predict_shifts("protein.pdb", pH=7.0)
-
-# ML only — no external tools required
-df = predict_shifts("protein.pdb", pH=7.0, TP=False)
 
 # Transfer prediction only
 df = predict_shifts("protein.pdb", pH=7.0, ML=False)
 ```
 
-### Google Colab
+### Full Colab setup
 
 ```python
-# Install package and dependencies
-!pip install git+https://github.com/HWaymentSteele/CSpred.git
+# Install package
+!pip install --force-reinstall --no-deps git+https://github.com/HWaymentSteele/CSpred.git
 
-# Download and extract model weights
-!wget -q "https://datadryad.org/stash/downloads/file_stream/YOUR_FILE_ID" -O models.tgz
-!tar -xzf models.tgz
+# Download model weights from Hugging Face
+from huggingface_hub import snapshot_download
+import os
 
+repo_id = "hkws/ucbshift_weights"
+local_dir = "./ucbshift_weights"
+
+if not os.path.exists(f"{local_dir}/CA_R0.sav"):
+    os.makedirs(local_dir, exist_ok=True)
+    snapshot_download(repo_id=repo_id, repo_type="model", local_dir=local_dir)
+
+# Run prediction
 from cspred import predict_shifts
-df = predict_shifts("protein.pdb", pH=7.0, TP=False)  # ML-only, no external tools needed
+df = predict_shifts("protein.pdb", pH=7.0, TP=False)
 df.head()
 ```
 
