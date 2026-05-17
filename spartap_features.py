@@ -650,14 +650,8 @@ class PDB_SPARTAp_DataReader(BaseDataReader):
                         row_data += [dssp_dat[3], dssp_dat[3] * max_asa_dict[resname]]
                         row_data += [dssp_dat[4], dssp_dat[5]]
                         row_data += [dssp_dat[7], dssp_dat[9], dssp_dat[11], dssp_dat[13]]
-                    except KeyError:
-                        print(f'KeyError at {(chain.id, res.id)} — skipping residue')
+                    except (KeyError, TypeError):
                         row_data += [0] * 16
-                        continue
-                    except TypeError:
-                        print(f'DSSP failed at {(chain.id, res.id)} — skipping residue')
-                        row_data += [0] * 16
-                        continue
                     row_data += [rings[resnum][i] for i in ring_column_names]
                     row_data += [self.get_bfactor(res, atoms=bfact_mode)]
                     if sequence_columns > 0:
