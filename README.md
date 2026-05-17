@@ -1,6 +1,6 @@
 # UCBShift
 
-UCBShift is a program for predicting chemical shifts for backbone atoms and β-carbon of a protein in solution. 
+UCBShift is a program for predicting chemical shifts for protein backbone atoms and β-carbons. 
 
 ## Quick start
 
