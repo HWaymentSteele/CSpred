@@ -28,7 +28,7 @@ if sys.version_info < (3, 8):
 pd.options.mode.chained_assignment = None
 
 SCRIPT_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
-ML_MODEL_PATH = SCRIPT_PATH / "ucbshift_weights"
+ML_MODEL_PATH = Path("ucbshift_weights")  # resolved relative to cwd at call time
 
 
 def build_input(
