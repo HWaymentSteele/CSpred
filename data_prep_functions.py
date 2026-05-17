@@ -226,7 +226,7 @@ def feat_pwr(data: pd.DataFrame, columns: list, pwrs: list) -> pd.DataFrame:
         for power in pwrs:
             new_col_name = f"{col}^{power}"
             if power < 0:
-                dat[new_col_name] = 0
+                dat[new_col_name] = 0.0
                 dat.loc[dat[col] > 0, new_col_name] = dat.loc[dat[col] > 0, col] ** power
             else:
                 dat[new_col_name] = dat[col] ** power
