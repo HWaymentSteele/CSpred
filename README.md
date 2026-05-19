@@ -43,6 +43,9 @@ df = predict_shifts("protein.pdb", pH=7.0)
 
 # Transfer prediction only
 df = predict_shifts("protein.pdb", pH=7.0, ML=False)
+
+# Predict a subset of atom types (avoids loading unused models)
+df = predict_shifts("protein.pdb", pH=7.0, TP=False, atom_types=["H", "N", "CA"])
 ```
 
 ### Full Colab setup

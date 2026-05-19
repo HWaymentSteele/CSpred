@@ -88,13 +88,28 @@ def predict_shifts(
     TP_pred: Optional[pd.DataFrame] = None,
     ML: bool = True,
     test: bool = False,
+    atom_types: Optional[list] = None,
 ) -> pd.DataFrame:
     """Predict chemical shifts for a single PDB file.
 
-    TP  — use UCBShift-Y (transfer prediction) module
-    ML  — use UCBShift-X (machine learning) module
-    test — exclude mode for UCBShift-Y (for benchmarking)
+    Args:
+        pdb_file_name: Path to the (hydrogenated) PDB file.
+        pH: pH value for prediction. Default is 5.0.
+        TP: Use UCBShift-Y (transfer prediction) module. Default True.
+        TP_pred: Pre-computed UCBShift-Y predictions. If None, computed internally.
+        ML: Use UCBShift-X (machine learning) module. Default True.
+        test: Exclude mode for UCBShift-Y benchmarking. Default False.
+        atom_types: Atoms to predict — any subset of ["H","HA","C","CA","CB","N"].
+                    Defaults to all six atom types.
+
+    Example::
+
+        from cspred import predict_shifts
+
+        # Predict H, N, CA only using the ML module at pH 7
+        df = predict_shifts("protein_hyd.pdb", pH=7.0, TP=False, atom_types=["H", "N", "CA"])
     """
+    atoms = atom_types if atom_types is not None else toolbox.ATOMS
     if not ML_MODEL_PATH.is_dir():
         raise FileNotFoundError(f"Models directory not found: {ML_MODEL_PATH}")
     if pH < 2 or pH > 12:
@@ -109,7 +124,7 @@ def predict_shifts(
             TP_pred = ucbshifty.main(pdb_file_name, 1, exclude=test, custom_working_dir=hashed)
         if not ML:
             preds = TP_pred[["RESNUM", "RESNAME"]].copy()
-            for atom in toolbox.ATOMS:
+            for atom in atoms:
                 rc = TP_pred[f"{atom}_RC"] if f"{atom}_RC" in TP_pred.columns else 0
                 preds[f"{atom}_Y"] = TP_pred[atom] + rc
 
@@ -123,7 +138,7 @@ def predict_shifts(
         feats = data_preprocessing(feats)
 
         result: dict = {"RESNUM": resnums, "RESNAME": resnames}
-        for atom in toolbox.ATOMS:
+        for atom in atoms:
             print(f"Calculating UCBShift-X predictions for {atom} ...")
             atom_feats = prepare_data_for_atom(feats, atom)
             r0 = joblib.load(ML_MODEL_PATH / f"{atom}_R0.sav")
